@@ -1,0 +1,38 @@
+<header class="header">
+  <div class="logo">
+    <a routerLink="/">Könyv Webshop</a>
+  </div>
+
+  <nav class="nav">
+    <ul class="nav-list">
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <span class="welcome-text">Üdv, {{ authService.currentUser$ | async | username }}</span>
+      </li>
+      
+      <li class="nav-item" appHoverBorder>
+        <a routerLink="/books" routerLinkActive="active">Könyvek</a>
+      </li>
+      <li class="nav-item" appHoverBorder>
+        <a routerLink="/cart" routerLinkActive="active">Kosár</a>
+      </li>
+      
+      <li class="nav-item" *ngIf="!authService.isLoggedIn()" appHoverBorder>
+        <a routerLink="/login">Bejelentkezés</a>
+      </li>
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <button mat-button class="logout-btn" (click)="authService.logout()">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </li>
+      
+      <li class="nav-item cart-icon">
+        <a routerLink="/cart">
+          <mat-icon matBadge="{{ cartService.getCart().items.length }}" matBadgeColor="warn">shopping_cart</mat-icon>
+          <span *ngIf="showCartSummary">
+            {{ cartTotal | currency:'HUF':'symbol':'1.0-0' }}
+          </span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>

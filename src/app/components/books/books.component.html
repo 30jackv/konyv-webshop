@@ -1,0 +1,32 @@
+
+<div class="book-list">
+    <div class="books-container">
+    <h1>Könyveink</h1>
+    
+    <div class="book-grid">
+      <mat-card *ngFor="let book of books" class="book-card" appAddToCartHighlight >
+        <div class="book-details">
+          <h3>{{ book.title }}</h3>
+          <p class="author">Szerző: {{ book.author }}</p>
+          
+          <div class="price-section">
+            <p class="original-price" [class.line-through]="book.discount">
+              {{ book.price | currency:'HUF':'symbol':'1.0-0' }}
+            </p>
+            <p class="discounted-price" *ngIf="book.discount">
+              Akciós ár: {{ book.price | discount:book.discount | currency:'HUF':'symbol':'1.0-0' }}
+            </p>
+          </div>
+          
+          <button mat-raised-button 
+                  color="primary"
+                  (click)="addToCart(book)"
+                  class="add-to-cart-btn">
+            <mat-icon>add_shopping_cart</mat-icon>
+            <span>Kosárba</span>
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

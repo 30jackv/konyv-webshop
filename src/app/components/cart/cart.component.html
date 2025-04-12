@@ -1,0 +1,69 @@
+<mat-card class="cart-container">
+  <mat-card-header>
+    <mat-card-title>Kosár tartalma</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="cartService.getCart().items.length === 0" class="empty-cart">
+      <p>A kosár üres</p>
+      <a mat-raised-button color="primary" routerLink="/books" class="browse-link">
+        <mat-icon>book</mat-icon>
+        Tallózz könyveink között
+      </a>
+    </div>
+
+    <div *ngIf="cartService.getCart().items.length > 0">
+      <mat-card *ngFor="let item of cartService.getCart().items" class="cart-item">
+        <mat-card-content class="item-content">
+          <div class="item-details">
+            <h3>{{ item.book.title }}</h3>
+            <p>Szerző: {{ item.book.author }}</p>
+            <p>Egységár: 
+              <span *ngIf="!item.book.discount">{{ item.book.price | currency:'HUF':'symbol':'1.0-0' }}</span>
+              <span *ngIf="item.book.discount">
+                <span class="original-price">{{ item.book.price | currency:'HUF':'symbol':'1.0-0' }}</span>
+                <span class="discounted-price">
+                  {{ item.book.price | discount:item.book.discount | currency:'HUF':'symbol':'1.0-0' }}
+                </span>
+              </span>
+            </p>
+            
+            <div class="quantity-control">
+              <mat-form-field appearance="outline" class="quantity-field number-input">
+                <mat-label>Mennyiség</mat-label>
+                <input matInput
+                type="number"
+                min="1" 
+                [value]="item.quantity" 
+                (change)="onQuantityChange(item.book.id, $event)"
+                (keydown)="handleKeyDown($event)"
+              >
+              </mat-form-field>
+              <button mat-raised-button color="warn" (click)="cartService.removeFromCart(item.book.id)" class="remove-btn">
+                <mat-icon>delete</mat-icon>
+                Törlés
+              </button>
+            </div>
+          </div>
+          <div class="item-total">
+            {{ getItemTotal(item) | currency:'HUF':'symbol':'1.0-0' }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-divider></mat-divider>
+
+      <div class="cart-summary">
+        <h3>Összesen: {{ cartService.getCart().total | currency:'HUF':'symbol':'1.0-0' }}</h3>
+        <button mat-raised-button color="primary" class="checkout-btn">
+          <mat-icon>payment</mat-icon>
+          Tovább a fizetéshez
+        </button>
+        <button mat-button color="warn" (click)="clearCart()" class="clear-btn">
+          <mat-icon>remove_shopping_cart</mat-icon>
+          Kosár ürítése
+        </button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,89 @@
+.books-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+  }
+
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .book-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    
+    &:hover {
+      transform: translateY(-5px);
+    }
+  }
+
+  .book-details {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    h3 {
+      margin: 0 0 0.8rem 0;
+      color: #34495e;
+      font-size: 1.2rem;
+    }
+
+    .author {
+      margin-bottom: 1rem;
+      color: #7f8c8d;
+    }
+
+    .price-section {
+      margin: 1rem 0;
+    }
+  }
+
+  .add-to-cart-btn {
+    margin-top: auto; 
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+}
+
+.discounted-price {
+  color: #e53935;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.original-price {
+  color: #9e9e9e;
+  font-size: 1rem;
+}
+
+.line-through {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
