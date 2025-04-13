@@ -16,7 +16,7 @@
     padding: 1rem;
 
     @media (max-width: 480px) {
-      grid-template-columns: 1fr; // 1 oszlop mobilon
+      grid-template-columns: 1fr;
       gap: 1rem;
     }
   
