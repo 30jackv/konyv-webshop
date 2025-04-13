@@ -1,14 +1,22 @@
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
   background-color: #f8f9fa;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  overflow: hidden;
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+  }
 
   .logo {
     font-size: 1.5rem;
     font-weight: bold;
+    white-space: nowrap;
     
     a {
       text-decoration: none;
@@ -22,12 +30,15 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 
     .nav-item {
       display: flex;
       align-items: center;
       height: 100%;
+      white-space: nowrap;
 
       a {
         text-decoration: none;
@@ -39,6 +50,7 @@
         display: flex;
         align-items: center;
         gap: 0.3rem;
+        font-size: 0.95rem;
 
         &:hover {
           color: #1976d2;
@@ -49,14 +61,27 @@
         }
       }
 
+      &.welcome-item {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       .welcome-text {
         color: #555;
         font-weight: 500;
         margin-right: 0.5rem;
+        font-size: 0.95rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       &.cart-icon {
         margin-left: 0.5rem;
+        
+        .cart-summary-text {
+          font-size: 0.9rem;
+        }
       }
     }
 
@@ -90,6 +115,53 @@
       ::ng-deep .mat-ripple-element {
         display: none !important;
       }
+    }
   }
-}
+
+  @media (max-width: 768px) {
+    .header-content {
+      flex-direction: column;
+      padding: 0.5rem;
+    }
+
+    .logo {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-list {
+      justify-content: center;
+      gap: 0.75rem;
+      
+      .nav-item {
+        &.welcome-item {
+          order: -1;
+          flex-basis: 100%;
+          text-align: center;
+          justify-content: center;
+          max-width: 100%;
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-list {
+      gap: 0.5rem;
+      
+      .nav-item {
+        .welcome-text {
+          display: none;
+        }
+        a {
+          font-size: 0.85rem;
+          padding: 0.5rem;
+        }
+        
+        .cart-summary-text {
+          display: none;
+        }
+      }
+    }
+  }
 }

@@ -42,6 +42,17 @@
   .cart-item {
     margin: 1rem 0;
     transition: box-shadow 0.3s ease;
+    .item-content {
+      @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: stretch;
+  
+        .item-total {
+          text-align: left;
+          margin-top: 1rem;
+        }
+      }
+    }
 
     &:hover {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
