@@ -1,37 +1,59 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
-import { User } from '../models/user';
+import { FirebaseService } from './firebase.service';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private users: User[] = [
-    { id: '1', username: 'admin', password: 'admin123' },
-    { id: '2', username: 'user', password: 'user123' }
-  ];
+  public user$: Observable<any>;
+  public currentUser$: Observable<any>;
 
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  currentUser$ = this.currentUserSubject.asObservable();
-
-  login(username: string, password: string): boolean {
-    const user = this.users.find(u => 
-      u.username === username && u.password === password
-    );
-    if (user) {
-      this.currentUserSubject.next(user);
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      return true;
-    }
-    return false;
+  constructor(
+    private firebaseService: FirebaseService,
+    private router: Router
+  ) {
+    this.user$ = this.firebaseService.user$;
+    this.currentUser$ = this.firebaseService.user$;
   }
 
-  logout(): void {
-    this.currentUserSubject.next(null);
-    localStorage.removeItem('currentUser');
+  async signIn(email: string, password: string) {
+    try {
+      await this.firebaseService.signIn(email, password);
+      this.router.navigate(['/']);
+      return true;
+    } catch (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    }
+  }
+
+  async signUp(email: string, password: string) {
+    try {
+      await this.firebaseService.signUp(email, password);
+      this.router.navigate(['/']);
+      return true;
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
+    }
+  }
+
+  async signOut() {
+    try {
+      await this.firebaseService.signOut();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  }
+
+  async logout() {
+    return this.signOut();
   }
 
   isLoggedIn(): boolean {
-    return !!this.currentUserSubject.value;
+    return this.firebaseService.getCurrentUser() !== null;
   }
 }

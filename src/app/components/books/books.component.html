@@ -1,30 +1,87 @@
-
 <div class="book-list">
-    <div class="books-container">
-    <h1>Könyveink</h1>
-    
-    <div class="book-grid">
-      <mat-card *ngFor="let book of books" class="book-card" appAddToCartHighlight >
-        <div class="book-details">
-          <h3>{{ book.title }}</h3>
-          <p class="author">Szerző: {{ book.author }}</p>
-          
-          <div class="price-section">
-            <p class="original-price" [class.line-through]="book.discount">
-              {{ book.price | currency:'HUF':'symbol':'1.0-0' }}
-            </p>
-            <p class="discounted-price" *ngIf="book.discount">
-              Akciós ár: {{ book.price | discount:book.discount | currency:'HUF':'symbol':'1.0-0' }}
-            </p>
-          </div>
-          
-          <button mat-raised-button 
-                  color="primary"
-                  (click)="addToCart(book)"
-                  class="add-to-cart-btn">
-            <mat-icon>add_shopping_cart</mat-icon>
-            <span>Kosárba</span>
+  <div class="books-container">
+    <div class="books-header">
+      <h1>Könyveink</h1>
+      
+      <div class="filter-buttons">
+        <button mat-raised-button (click)="refreshBooks()" color="primary">
+          <mat-icon>list</mat-icon>
+          Összes
+        </button>
+
+        <button mat-raised-button (click)="loadDiscountedBooks()" color="accent">
+          <mat-icon>local_offer</mat-icon>
+          Akciók
+        </button>
+
+        <button mat-raised-button (click)="loadMostExpensiveBooks()" color="warn">
+          <mat-icon>trending_up</mat-icon>
+          Legdrágábbak
+        </button>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Szerző keresése</mat-label>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="authorSearchQuery"
+            (keyup.enter)="searchBooksByAuthor()"
+            placeholder="Írja be a szerzőt">
+          <button 
+            mat-icon-button 
+            matSuffix 
+            (click)="searchBooksByAuthor()"
+            matTooltip="Keresés">
+            <mat-icon>search</mat-icon>
           </button>
+        </mat-form-field>
+
+
+        <button mat-raised-button (click)="openBookForm()" color="accent">
+          <mat-icon>add</mat-icon>
+          Új könyv
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="spinner-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div class="book-grid" *ngIf="!loading">
+      <mat-card *ngFor="let book of books" 
+                class="book-card" 
+                [appDiscountBadge]="book.discount || 0" 
+                appAddToCartHighlight 
+                appHoverScale 
+                [scaleFactor]="1.1">
+        <div class="book-details">
+          <h3>{{ book.title | truncate:15:true }}</h3>
+          <p class="author">Szerző: {{ book.author }}</p>
+
+          <div class="price-section">
+            <span *ngIf="book.discount">
+              <span class="original-price">{{ book.price | currency:'HUF':'symbol-narrow' }}</span>
+              <span class="discounted-price">{{ book.price | discount:book.discount | currency:'HUF':'symbol-narrow' }}</span>
+            </span>
+            <span *ngIf="!book.discount">
+              {{ book.price | currency:'HUF':'symbol-narrow' }}
+            </span>
+          </div>
+
+          <div class="book-actions">
+            <button mat-icon-button (click)="openBookForm(book)" matTooltip="Szerkesztés">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-raised-button 
+                    color="primary"
+                    (click)="addToCart(book)"
+                    class="add-to-cart-btn"
+                    [appTooltip]="'Könyv hozzáadása a kosárhoz: ' + book.title">
+              <mat-icon>add_shopping_cart</mat-icon>
+              <span>Kosárba</span>
+            </button>
+          </div>
         </div>
       </mat-card>
     </div>

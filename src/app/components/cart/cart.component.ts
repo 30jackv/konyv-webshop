@@ -13,6 +13,9 @@ import { CartItem } from '../../models/cart';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { DiscountPipe } from "../../pipes/discount.pipe";
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-cart',
@@ -27,21 +30,45 @@ import { DiscountPipe } from "../../pipes/discount.pipe";
     MatDividerModule,
     MatIconModule,
     RouterModule,
-    DiscountPipe
-],
+    DiscountPipe,
+    MatTooltipModule
+  ],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss']
 })
-
-
 export class CartComponent {
-  constructor(public cartService: CartService, private dialog: MatDialog) {}
+  constructor(
+    public cartService: CartService, 
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private authService: AuthService
+  ) {}
 
-  onQuantityChange(bookId: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const quantity = parseInt(input.value);
+onQuantityChange(bookId: string, event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const quantity = parseInt(input.value);
+  if (isNaN(quantity) || quantity < 1) {
+    input.value = '1';
+    this.cartService.updateQuantity(bookId, 1);
+  } else {
     this.cartService.updateQuantity(bookId, quantity);
   }
+}
+
+increaseQuantity(bookId: string): void {
+  const item = this.cartService.getCart().items.find((item: CartItem) => item.book.id === bookId);
+  if (item) {
+    this.cartService.updateQuantity(bookId, item.quantity + 1);
+  }
+}
+
+decreaseQuantity(bookId: string): void {
+  const item = this.cartService.getCart().items.find((item: CartItem) => item.book.id === bookId);
+  if (item && item.quantity > 1) {
+    this.cartService.updateQuantity(bookId, item.quantity - 1);
+  }
+}
+
 
   getItemTotal(item: CartItem): number {
     if (item.book.discount) {
@@ -61,8 +88,23 @@ export class CartComponent {
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
         this.cartService.clearCart();
+        this.snackBar.open('A kosár kiürítve', 'OK', { duration: 3000 });
       }
     });
+  }
+
+  async checkout(): Promise<void> {
+    if (!this.authService.isLoggedIn()) {
+      this.snackBar.open('A vásárláshoz be kell jelentkeznie', 'OK', { duration: 3000 });
+      return;
+    }
+
+    try {
+      await this.cartService.checkout();
+      this.snackBar.open('A rendelését sikeresen rögzítettük', 'OK', { duration: 3000 });
+    } catch (error: any) {
+      this.snackBar.open(error.message || 'Hiba történt a fizetés során', 'OK', { duration: 3000 });
+    }
   }
 
   handleKeyDown(event: KeyboardEvent): boolean {
@@ -70,6 +112,3 @@ export class CartComponent {
     return !forbiddenKeys.includes(event.key);
   }
 }
-
-
-

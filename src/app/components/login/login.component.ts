@@ -1,52 +1,86 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatError } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  standalone: true,
   imports: [
+    CommonModule,
+    FormsModule,
     ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatButtonModule,
     MatCardModule,
-    CommonModule
-  ]
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatError
+  ],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-  errorMessage: string | null = null;
+  email = '';
+  password = '';
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+  constructor(private authService: AuthService) {}
+
+  async onSignIn() {
+    if (!this.email || !this.password) return;
+    
+    this.isLoading = true;
+    this.errorMessage = '';
+    
+    try {
+      await this.authService.signIn(this.email, this.password);
+    } catch (error: any) {
+      this.errorMessage = this.getErrorMessage(error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) return;
+  async onSignUp() {
+    if (!this.email || !this.password) return;
+    
+    this.isLoading = true;
+    this.errorMessage = '';
+    
+    try {
+      await this.authService.signUp(this.email, this.password);
+    } catch (error: any) {
+      this.errorMessage = this.getErrorMessage(error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
 
-    const { username, password } = this.loginForm.value;
-    const isSuccess = this.authService.login(username, password);
-
-    if (isSuccess) {
-      this.router.navigate(['/']);
-    } else {
-      this.errorMessage = 'Hibás felhasználónév vagy jelszó!';
+  private getErrorMessage(error: any): string {
+    const errorCode = error.code;
+    switch (errorCode) {
+      case 'auth/user-not-found':
+        return 'Nincs ilyen felhasználó regisztrálva.';
+      case 'auth/wrong-password':
+        return 'Helytelen jelszó.';
+      case 'auth/email-already-in-use':
+        return 'Ez az email cím már használatban van.';
+      case 'auth/weak-password':
+        return 'A jelszó túl gyenge (legalább 6 karakter).';
+      case 'auth/invalid-email':
+        return 'Érvénytelen email cím.';
+      default:
+        return 'Ismeretlen hiba történt. Kérjük próbálja újra később.';
     }
   }
 }

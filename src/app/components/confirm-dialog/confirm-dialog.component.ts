@@ -1,25 +1,38 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
+  selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [
-    MatDialogModule,
-    MatButtonModule
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule],
   template: `
     <h2 mat-dialog-title>{{ data.title }}</h2>
     <mat-dialog-content>{{ data.message }}</mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="false">Mégse</button>
-      <button mat-raised-button color="warn" [mat-dialog-close]="true">Törlés</button>
+      <button mat-button (click)="onNoClick()">Mégse</button>
+      <button mat-raised-button color="warn" (click)="onYesClick()">Igen</button>
     </mat-dialog-actions>
   `,
+  styles: [`
+    mat-dialog-actions {
+      padding: 16px 24px;
+    }
+  `]
 })
 export class ConfirmDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }
+    @Inject(MAT_DIALOG_DATA) public data: { title: string, message: string }
   ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close(false);
+  }
+
+  onYesClick(): void {
+    this.dialogRef.close(true);
+  }
 }

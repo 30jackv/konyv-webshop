@@ -1,3 +1,36 @@
 <div class="home">
-    <h1>Üdvözöllek</h1>
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Üdvözöllek a <span class="logo-text">Könyv Webshopban</span>-ban!</h1>
+      <p>Érdekelnek a legeslegjobb könyvek?</p>
+      <button mat-raised-button color="primary" routerLink="/books" class="cta-button">
+        <mat-icon>menu_book</mat-icon>
+        Fedezd fel most!
+      </button>
+    </div>
+  </section>
+
+  <section class="featured-books">
+    <div class="section-header">
+      <h2><mat-icon>local_offer</mat-icon> ⏳ Limitált Ajánlatok</h2>
+    </div>
+    <div class="book-list">
+      <mat-card *ngFor="let book of discountedBooks" class="book-card" appHoverScale>
+        <div class="book-badge" *ngIf="book.discount">-{{ book.discount }}%</div>
+        <h3>{{ book.title | truncate:20 }}</h3>
+        <p class="author">{{ book.author }}</p>
+        <div class="price">
+          <span class="discounted-price">
+            {{ book.price | discount:(book.discount ?? undefined) | currency:'HUF':'symbol':'1.0-0' }}
+          </span>
+          <span class="original-price">
+            {{ book.price | currency:'HUF':'symbol':'1.0-0' }}
+          </span>
+        </div>
+        <button mat-mini-fab color="primary" (click)="addToCart(book)" class="cart-button">
+          <mat-icon>add_shopping_cart</mat-icon>
+        </button>
+      </mat-card>
+    </div>
+  </section>
 </div>
