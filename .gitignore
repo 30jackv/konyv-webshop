@@ -60,3 +60,7 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# .gitignore
+src/environments/*.ts
+!src/environments/environment.prod.ts
